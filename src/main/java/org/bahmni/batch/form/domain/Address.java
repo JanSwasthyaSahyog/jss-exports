@@ -6,7 +6,6 @@ public class Address {
     private String tehsil;
     private String district;
 
-
     public Address(String village, String block, String tehsil, String district) {
         this.village = village;
         this.block = block;

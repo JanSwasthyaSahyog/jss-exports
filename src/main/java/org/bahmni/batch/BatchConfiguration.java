@@ -48,6 +48,9 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Autowired
 	private ObjectFactory<WideFormatObservationExportStep> wideFormatObservationExportStepFactory;
 
+	@Autowired
+	private ObjectFactory<WideFormatInPatientExportStep> wideFormatInPatientExportStepFactory;
+
 	@Value("${templates}")
 	private Resource freemarkerTemplateLocation;
 
@@ -90,6 +93,18 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 		}
 
 		return completeDataExport.end().build();
+	}
+
+	public Job inpatientExport(DateRange dateRange){
+		FlowBuilder<FlowJobBuilder> inpatientExport = jobBuilders.get(FULL_DATA_EXPORT_JOB_NAME)
+				.incrementer(new RunIdIncrementer()).preventRestart()
+				.flow(beforeStep());
+
+		WideFormatInPatientExportStep wideFormatInpatientExportStep = wideFormatInPatientExportStepFactory.getObject();
+		wideFormatInpatientExportStep.setDateRange(dateRange);
+		inpatientExport.next(wideFormatInpatientExportStep.getStep());
+
+		return inpatientExport.end().build();
 	}
 
 

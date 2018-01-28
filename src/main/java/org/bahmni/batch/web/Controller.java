@@ -24,13 +24,37 @@ public class Controller {
     @Autowired
     JobLauncher jobLauncher;
 
-    @RequestMapping(path = "/export")
-    public void runExport(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+    @RequestMapping(path = "/form-export")
+    public void runFormExport(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
         System.out.println("Running the job for date range "+startDate+"-"+endDate);
         DateRange dateRange = new DateRange();
         dateRange.setStartDateString(startDate);
         dateRange.setEndDateString(endDate);
         Job job = batchConfiguration.completeDataExport(dateRange);
+        try {
+            JobParameters jobParameters =
+                    new JobParametersBuilder()
+                            .addLong("time",System.currentTimeMillis()).toJobParameters();
+            jobLauncher.run(job, jobParameters);
+        } catch (JobExecutionAlreadyRunningException e) {
+            e.printStackTrace();
+        } catch (JobRestartException e) {
+            e.printStackTrace();
+        } catch (JobInstanceAlreadyCompleteException e) {
+            e.printStackTrace();
+        } catch (JobParametersInvalidException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @RequestMapping(path = "/inpatient-export")
+    public void runInPatientExport(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate){
+        System.out.println("Running the job for date range "+startDate+"-"+endDate);
+        DateRange dateRange = new DateRange();
+        dateRange.setStartDateString(startDate);
+        dateRange.setEndDateString(endDate);
+        Job job = batchConfiguration.inpatientExport(dateRange);
         try {
             JobParameters jobParameters =
                     new JobParametersBuilder()

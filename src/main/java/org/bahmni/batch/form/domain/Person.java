@@ -9,6 +9,7 @@ public class Person {
     private Integer age;
     private String gender;
     private Address address;
+    private String smartCardHolder;
 
     public Person(){
 
@@ -65,5 +66,13 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public String getSmartCardHolder() {
+        return smartCardHolder;
+    }
+
+    public void setSmartCardHolder(String smartCardHolder) {
+        this.smartCardHolder = smartCardHolder;
     }
 }
