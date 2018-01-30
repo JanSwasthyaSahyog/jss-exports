@@ -1,4 +1,4 @@
-# searchsmu-exports
+# jss-exports
 
 **To Build**
 > ./gradlew clean buildRpm
