@@ -10,6 +10,10 @@ public class Person {
     private String gender;
     private Address address;
     private String smartCardHolder;
+    private String smoking;
+    private String alcohol;
+    private String foodSecurity;
+    private Integer familyIncome;
 
     public Person(){
 
@@ -74,5 +78,37 @@ public class Person {
 
     public void setSmartCardHolder(String smartCardHolder) {
         this.smartCardHolder = smartCardHolder;
+    }
+
+    public String getSmoking() {
+        return smoking;
+    }
+
+    public void setSmoking(String smoking) {
+        this.smoking = smoking;
+    }
+
+    public String getAlcohol() {
+        return alcohol;
+    }
+
+    public void setAlcohol(String alcohol) {
+        this.alcohol = alcohol;
+    }
+
+    public String getFoodSecurity() {
+        return foodSecurity;
+    }
+
+    public void setFoodSecurity(String foodSecurity) {
+        this.foodSecurity = foodSecurity;
+    }
+
+    public Integer getFamilyIncome() {
+        return familyIncome;
+    }
+
+    public void setFamilyIncome(Integer familyIncome) {
+        this.familyIncome = familyIncome;
     }
 }

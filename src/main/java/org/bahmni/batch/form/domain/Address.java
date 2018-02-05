@@ -5,6 +5,7 @@ public class Address {
     private String block;
     private String tehsil;
     private String district;
+    private String state;
 
     public Address(String village, String block, String tehsil, String district) {
         this.village = village;
@@ -32,4 +33,11 @@ public class Address {
         return district;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 }

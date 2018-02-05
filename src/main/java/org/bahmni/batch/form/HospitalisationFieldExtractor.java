@@ -27,7 +27,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		row.add(hospitalisation.getPerson().getAge());
 		row.add(hospitalisation.getPerson().getGender());
 		row.add(hospitalisation.getPerson().getSmartCardHolder());
-		row.add(hospitalisation.getPerson().getAddress().getVillage());
+		row.add(hospitalisation.getPerson().getSmoking());
+		row.add(hospitalisation.getPerson().getAlcohol());
+		row.add(hospitalisation.getPerson().getFoodSecurity());
+		row.add(hospitalisation.getPerson().getFamilyIncome());
+		row.add("To be filled by Tim using Community Health Worker expertise");
+		row.add(massageStringValue(hospitalisation.getPerson().getAddress().getVillage()));
+		row.add(massageStringValue(hospitalisation.getPerson().getAddress().getTehsil()));
+		row.add(massageStringValue(hospitalisation.getPerson().getAddress().getState()));
 		row.add(new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getAdmissionDate()));
 		row.add(hospitalisation.getDischargeDate()!= null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getDischargeDate()) : null);
 		row.add(hospitalisation.getLengthOfHospitalisation());
@@ -66,7 +73,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 //		sb.append(",").append("Patient Birth date");
 		sb.append(",").append("Patient Gender");
 		sb.append(",").append("Smart Card Holder");
+		sb.append(",").append("Smoking");
+		sb.append(",").append("Alcohol");
+		sb.append(",").append("Food Security");
+		sb.append(",").append("Family Income");
+		sb.append(",").append("Travel Time to JSS (hours)");
 		sb.append(",").append("Patient Village");
+		sb.append(",").append("Patient Tehsil");
+		sb.append(",").append("Patient State");
 		sb.append(",").append("Admission Date");
 		sb.append(",").append("Discharge date");
 		sb.append(",").append("Length of Hospitalisation (Days)");
@@ -87,7 +101,13 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		return sb.toString();
 	}
 
-    private static String ordinal(int i) {
+	private String massageStringValue(String text){
+		if(StringUtils.isEmpty(text))
+			return text;
+		return text.replaceAll("\n"," ").replaceAll("\t"," ").replaceAll(","," ");
+	}
+
+	private static String ordinal(int i) {
         String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
         switch (i % 100) {
             case 11:

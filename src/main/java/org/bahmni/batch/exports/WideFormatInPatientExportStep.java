@@ -77,10 +77,15 @@ public class WideFormatInPatientExportStep {
         reader.setRowMapper(new BeanPropertyRowMapper<Hospitalisation>(Hospitalisation.class){
             public Hospitalisation mapRow(ResultSet rs, int i) throws SQLException {
                 Hospitalisation hospitalisation = super.mapRow(rs,i);
-                Address address = new Address(rs.getString("village"), null, null, null);
+                Address address = new Address(rs.getString("village"), null, rs.getString("tehsil"), null);
+                address.setState(rs.getString("state"));
                 Person person = new Person(rs.getInt("person_id"), null, null, rs.getInt("age"),
                         rs.getString("gender"), address);
                 person.setSmartCardHolder(rs.getString("smart_card_holder"));
+                person.setSmoking(rs.getString("smoking"));
+                person.setAlcohol(rs.getString("alcohol"));
+                person.setFoodSecurity(rs.getString("food_security"));
+                person.setFamilyIncome(rs.getInt("family_income"));
                 hospitalisation.setPerson(person);
                 return hospitalisation;
             }
