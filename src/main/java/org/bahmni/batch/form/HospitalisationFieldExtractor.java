@@ -39,6 +39,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		row.add(hospitalisation.getDischargeDate()!= null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getDischargeDate()) : null);
 		row.add(hospitalisation.getLengthOfHospitalisation());
 		row.add("System can't determine");
+		row.add(massageStringValue(hospitalisation.getDispositionNote()));
+		row.add(hospitalisation.getDisposingPerson());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getPulse());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getSystolic());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getDiastolic());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getTemperature());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getWeight());
+		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getHeight());
 
 
 
@@ -85,6 +93,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("Discharge date");
 		sb.append(",").append("Length of Hospitalisation (Days)");
 		sb.append(",").append("Admitting service");
+		sb.append(",").append("Disposition Note");
+		sb.append(",").append("Disposing Person");
+		sb.append(",").append("Pulse");
+		sb.append(",").append("Systolic");
+		sb.append(",").append("Diastolic");
+		sb.append(",").append("Temperature");
+		sb.append(",").append("Weight");
+		sb.append(",").append("Height");
 
         for (int i = 0; i < 20; i++) {
             sb.append(",").append(ordinal(i+1)+" Bed assignment");

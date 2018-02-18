@@ -13,7 +13,10 @@ public class Hospitalisation {
     private Person person;
     private List<Bed> bedAssignments;
     private List<Diagnosis> diagnoses;
+    private String dispositionNote;
+    private String disposingPerson;
     private Date subsequentOPDVisitDate;
+    private BasicObs firstRecordingOfBasicObsInFirstWeek;
 
     public Person getPerson() {
         return person;
@@ -126,4 +129,29 @@ public class Hospitalisation {
     private int diffInDays(Date d1, Date d2){
         return (int)((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
     }
+
+    public String getDispositionNote() {
+        return dispositionNote;
+    }
+
+    public void setDispositionNote(String dispositionNote) {
+        this.dispositionNote = dispositionNote;
+    }
+
+    public String getDisposingPerson() {
+        return disposingPerson;
+    }
+
+    public void setDisposingPerson(String disposingPerson) {
+        this.disposingPerson = disposingPerson;
+    }
+
+    public void firstRecordingOfBasicObsInFirstWeek(BasicObs basicObs) {
+        this.firstRecordingOfBasicObsInFirstWeek = basicObs;
+    }
+
+    public BasicObs getFirstRecordingOfBasicObsInFirstWeek() {
+        return firstRecordingOfBasicObsInFirstWeek;
+    }
+
 }

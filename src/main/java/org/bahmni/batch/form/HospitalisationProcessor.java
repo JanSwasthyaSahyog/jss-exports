@@ -36,6 +36,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/nextVisitForPatient.sql")
     private Resource opdFollowup1;
 
+    private String firstRecordingOfBasicObsInFirstWeekSql;
+
+    @Value("classpath:sql/firstRecordingOfBasicObsInFirstWeek.sql")
+    private Resource firstRecordingOfBasicObsInFirstWeek;
+
     @Value("${opdVisitTypeId}")
     private Integer opdVisitTypeId;
 
@@ -55,12 +60,25 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
 	public Hospitalisation process(Hospitalisation hospitalisation) throws Exception {
 		System.out.println("Processing hospitalisation for person "+hospitalisation.getIdentifier()+
                 " for date of admission "+hospitalisation.getAdmissionDate());
+		updateHospitalisationWithFirstRecordingOfBasicObs(hospitalisation);
 		updateHospitalisationWithBeds(hospitalisation);
 		updateHospitalisationWithDiagnosis(hospitalisation);
 		updateHospitalisationWithNextOPDFollowup(hospitalisation);
 		return hospitalisation;
 	}
 
+    private void updateHospitalisationWithFirstRecordingOfBasicObs(Hospitalisation hospitalisation) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("start_date", hospitalisation.getAdmissionDate());
+        params.put("patient_id", hospitalisation.getPerson().getId());
+
+        List<BasicObs> basicObs = jdbcTemplate.query(firstRecordingOfBasicObsInFirstWeekSql, params,
+                new BeanPropertyRowMapper<>(BasicObs.class));
+        if(!basicObs.isEmpty()){
+            hospitalisation.firstRecordingOfBasicObsInFirstWeek(basicObs.get(0));
+        }
+
+    }
     private void updateHospitalisationWithNextOPDFollowup(Hospitalisation hospitalisation) {
         Map<String,Object> params = new HashMap<>();
         params.put("reference_visit_id", hospitalisation.getVisitId());
@@ -105,6 +123,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         this.diagnosisInVisitSql = BatchUtils.convertResourceOutputToString(diagnosisInVisit);
         this.bedsInHospitalisationSql = BatchUtils.convertResourceOutputToString(bedsInHospitalisation);
         this.opdFollowup1Sql = BatchUtils.convertResourceOutputToString(opdFollowup1);
+        this.firstRecordingOfBasicObsInFirstWeekSql = BatchUtils.convertResourceOutputToString(firstRecordingOfBasicObsInFirstWeek);
 
     }
 
