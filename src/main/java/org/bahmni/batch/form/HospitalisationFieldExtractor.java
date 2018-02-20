@@ -61,6 +61,13 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		for (int i = 0; i < 20; i++) {
 			row.add(hospitalisation.getNthDiagnois(i));
 		}
+		row.add(massageStringValue(hospitalisation.getDischargeSummary().getAdmissionIndication()));
+		row.add(massageStringValue(hospitalisation.getDischargeSummary().getHospitalCourse()));
+		row.add(massageStringValue(hospitalisation.getDischargeSummary().getOperativeProcedure()));
+		row.add(hospitalisation.getDischargeSummary().getDateOfOperation()!=null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getDischargeSummary().getDateOfOperation()): null);
+		row.add(massageStringValue(hospitalisation.getDischargeSummary().getSurgicalIndication()));
+		row.add(massageStringValue(hospitalisation.getDischargeSummary().getAdviceOnDischarge()));
+		row.add(hospitalisation.getDischargeSummary().getFollowupDate()!=null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getDischargeSummary().getFollowupDate()): null);
 		row.add(hospitalisation.getSubsequentOPDVisitDate()!=null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getSubsequentOPDVisitDate()): null);
 		row.add(hospitalisation.daysOfSubsequentOPDVisitFromDischargeDate());
 
@@ -111,6 +118,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		for (int i = 0; i < 20; i++) {
 			sb.append(",").append("Diagnosis ").append(i+1);
 		}
+
+		sb.append(",").append("DS - Admission Indication");
+		sb.append(",").append("DS - Hospital Course");
+		sb.append(",").append("DS - Operative Procedure");
+		sb.append(",").append("DS - Date of Operation");
+		sb.append(",").append("DS - Surgical Indication");
+		sb.append(",").append("DS - Advice On Discharge");
+		sb.append(",").append("DS - Follow up date");
 		sb.append(",").append("OPD Follow up 1 Date");
 		sb.append(",").append("Days from Discharge OPD Follow up 1");
 

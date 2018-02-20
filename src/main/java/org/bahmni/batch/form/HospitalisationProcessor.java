@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/firstRecordingOfBasicObsInFirstWeek.sql")
     private Resource firstRecordingOfBasicObsInFirstWeek;
 
+    private String dischargeSummaryObsSql;
+
+    @Value("classpath:sql/dischargeSummaryObs.sql")
+    private Resource dischargeSummaryObs;
+
     @Value("${opdVisitTypeId}")
     private Integer opdVisitTypeId;
 
@@ -63,9 +69,23 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
 		updateHospitalisationWithFirstRecordingOfBasicObs(hospitalisation);
 		updateHospitalisationWithBeds(hospitalisation);
 		updateHospitalisationWithDiagnosis(hospitalisation);
+		updateHospitalisationWithDischargeSummaryObs(hospitalisation);
 		updateHospitalisationWithNextOPDFollowup(hospitalisation);
 		return hospitalisation;
 	}
+
+    private void updateHospitalisationWithDischargeSummaryObs(Hospitalisation hospitalisation) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("start_date", hospitalisation.getAdmissionDate());
+        params.put("end_date", hospitalisation.getDischargeDate()!=null ? hospitalisation.getDischargeDate():new Date());
+        params.put("patient_id", hospitalisation.getPerson().getId());
+
+        List<DischargeSummary> dischargeSummaries = jdbcTemplate.query(dischargeSummaryObsSql, params,
+                new BeanPropertyRowMapper<>(DischargeSummary.class));
+        if(!dischargeSummaries.isEmpty()){
+            hospitalisation.setDischargeSummary(dischargeSummaries.get(0));
+        }
+    }
 
     private void updateHospitalisationWithFirstRecordingOfBasicObs(Hospitalisation hospitalisation) {
         Map<String,Object> params = new HashMap<>();
@@ -75,7 +95,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         List<BasicObs> basicObs = jdbcTemplate.query(firstRecordingOfBasicObsInFirstWeekSql, params,
                 new BeanPropertyRowMapper<>(BasicObs.class));
         if(!basicObs.isEmpty()){
-            hospitalisation.firstRecordingOfBasicObsInFirstWeek(basicObs.get(0));
+            hospitalisation.setFirstRecordingOfBasicObsInFirstWeek(basicObs.get(0));
         }
 
     }
@@ -124,6 +144,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         this.bedsInHospitalisationSql = BatchUtils.convertResourceOutputToString(bedsInHospitalisation);
         this.opdFollowup1Sql = BatchUtils.convertResourceOutputToString(opdFollowup1);
         this.firstRecordingOfBasicObsInFirstWeekSql = BatchUtils.convertResourceOutputToString(firstRecordingOfBasicObsInFirstWeek);
+        this.dischargeSummaryObsSql = BatchUtils.convertResourceOutputToString(dischargeSummaryObs);
 
     }
 

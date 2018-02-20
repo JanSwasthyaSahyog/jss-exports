@@ -17,6 +17,7 @@ public class Hospitalisation {
     private String disposingPerson;
     private Date subsequentOPDVisitDate;
     private BasicObs firstRecordingOfBasicObsInFirstWeek;
+    private DischargeSummary dischargeSummary;
 
     public Person getPerson() {
         return person;
@@ -146,7 +147,7 @@ public class Hospitalisation {
         this.disposingPerson = disposingPerson;
     }
 
-    public void firstRecordingOfBasicObsInFirstWeek(BasicObs basicObs) {
+    public void setFirstRecordingOfBasicObsInFirstWeek(BasicObs basicObs) {
         this.firstRecordingOfBasicObsInFirstWeek = basicObs;
     }
 
@@ -154,4 +155,11 @@ public class Hospitalisation {
         return firstRecordingOfBasicObsInFirstWeek;
     }
 
+    public DischargeSummary getDischargeSummary() {
+        return dischargeSummary;
+    }
+
+    public void setDischargeSummary(DischargeSummary dischargeSummary) {
+        this.dischargeSummary = dischargeSummary;
+    }
 }
