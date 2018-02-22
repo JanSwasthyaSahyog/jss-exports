@@ -13,11 +13,13 @@ public class Hospitalisation {
     private Person person;
     private List<Bed> bedAssignments;
     private List<Diagnosis> diagnoses;
+    private List<Diagnosis> opdDiagnoses;
     private String dispositionNote;
     private String disposingPerson;
     private Date subsequentOPDVisitDate;
     private BasicObs firstRecordingOfBasicObsInFirstWeek;
     private DischargeSummary dischargeSummary;
+    private List<Visit> opdVisits;
 
     public Person getPerson() {
         return person;
@@ -100,12 +102,35 @@ public class Hospitalisation {
         this.diagnoses = diagnoses;
     }
 
+    public List<Diagnosis> getOpdDiagnoses() {
+        return opdDiagnoses;
+    }
+
+    public void setOpdDiagnoses(List<Diagnosis> opdDiagnoses) {
+        this.opdDiagnoses = opdDiagnoses;
+    }
+
     public String getNthDiagnois(int i) {
         if(i >= this.diagnoses.size()){
             return "N/A";
         }
         Diagnosis diagnosis = this.diagnoses.get(i);
         return "\""+diagnosis.toString()+"\"";
+    }
+
+    public String getNthOPDDiagnois(int i) {
+        if(i >= this.opdDiagnoses.size()){
+            return "N/A";
+        }
+        Diagnosis diagnosis = this.opdDiagnoses.get(i);
+        return "\""+diagnosis.toString()+"\"";
+    }
+
+    public Visit getNthOPDVisit(int i) {
+        if(i >= this.opdVisits.size()){
+            return null;
+        }
+        return this.opdVisits.get(i);
     }
 
     public Date getSubsequentOPDVisitDate() {
@@ -161,5 +186,13 @@ public class Hospitalisation {
 
     public void setDischargeSummary(DischargeSummary dischargeSummary) {
         this.dischargeSummary = dischargeSummary;
+    }
+
+    public List<Visit> getOpdVisits() {
+        return opdVisits;
+    }
+
+    public void setOpdVisits(List<Visit> opdVisits) {
+        this.opdVisits = opdVisits;
     }
 }

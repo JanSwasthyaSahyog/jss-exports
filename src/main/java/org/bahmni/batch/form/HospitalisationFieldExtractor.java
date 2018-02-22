@@ -61,6 +61,9 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		for (int i = 0; i < 20; i++) {
 			row.add(hospitalisation.getNthDiagnois(i));
 		}
+		for (int i = 0; i < 20; i++) {
+			row.add(hospitalisation.getNthOPDDiagnois(i));
+		}
 		row.add(massageStringValue(hospitalisation.getDischargeSummary().getAdmissionIndication()));
 		row.add(massageStringValue(hospitalisation.getDischargeSummary().getHospitalCourse()));
 		row.add(massageStringValue(hospitalisation.getDischargeSummary().getOperativeProcedure()));
@@ -70,6 +73,10 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		row.add(hospitalisation.getDischargeSummary().getFollowupDate()!=null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getDischargeSummary().getFollowupDate()): null);
 		row.add(hospitalisation.getSubsequentOPDVisitDate()!=null ? new SimpleDateFormat(DATE_FORMAT).format(hospitalisation.getSubsequentOPDVisitDate()): null);
 		row.add(hospitalisation.daysOfSubsequentOPDVisitFromDischargeDate());
+		for (int i = 0; i < 20; i++) {
+			Visit nthOPDVisit = hospitalisation.getNthOPDVisit(i);
+			row.add(nthOPDVisit!=null ? new SimpleDateFormat(DATE_FORMAT).format(nthOPDVisit.getVisit_date()): "N/A");
+		}
 
 		return row.toArray();
 	}
@@ -116,7 +123,10 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("Total Beds");
 		sb.append(",").append("Outcome");
 		for (int i = 0; i < 20; i++) {
-			sb.append(",").append("Diagnosis ").append(i+1);
+			sb.append(",").append("IPD Diagnosis ").append(i+1);
+		}
+		for (int i = 0; i < 20; i++) {
+			sb.append(",").append("OPD Diagnosis ").append(i+1);
 		}
 
 		sb.append(",").append("DS - Admission Indication");
@@ -128,6 +138,9 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("DS - Follow up date");
 		sb.append(",").append("OPD Follow up 1 Date");
 		sb.append(",").append("Days from Discharge OPD Follow up 1");
+		for (int i = 0; i < 20; i++) {
+			sb.append(",").append(ordinal(i+1)+" OPD Visit in report date range");
+		}
 
 		return sb.toString();
 	}

@@ -32,6 +32,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/diagnosisInVisit.sql")
     private Resource diagnosisInVisit;
 
+    private String allDiagnosisSql;
+
+    @Value("classpath:sql/allDiagnosisFromAVisitType.sql")
+    private Resource allDiagnosis;
+
     private String opdFollowup1Sql;
 
     @Value("classpath:sql/nextVisitForPatient.sql")
@@ -47,6 +52,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/dischargeSummaryObs.sql")
     private Resource dischargeSummaryObs;
 
+    private String opdVisitsSql;
+
+    @Value("classpath:sql/opdVisits.sql")
+    private Resource opdVisits;
+
     @Value("${opdVisitTypeId}")
     private Integer opdVisitTypeId;
 
@@ -56,23 +66,46 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("${diagnosisOrderConceptId}")
     private Integer diagnosisOrderConceptId;
 
+    @Value("${diagnosisStatusConceptId}")
+    private Integer diagnosisStatusConceptId;
+
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
 
+    private DateRange dateRange;
 
 
-	@Override
+    @Override
 	public Hospitalisation process(Hospitalisation hospitalisation) throws Exception {
 		System.out.println("Processing hospitalisation for person "+hospitalisation.getIdentifier()+
                 " for date of admission "+hospitalisation.getAdmissionDate());
 		updateHospitalisationWithFirstRecordingOfBasicObs(hospitalisation);
 		updateHospitalisationWithBeds(hospitalisation);
 		updateHospitalisationWithDiagnosis(hospitalisation);
+		updateHospitalisationWithOPDDiagnosis(hospitalisation);
 		updateHospitalisationWithDischargeSummaryObs(hospitalisation);
 		updateHospitalisationWithNextOPDFollowup(hospitalisation);
+		updateHospitalisationWithOPDVisits(hospitalisation);
 		return hospitalisation;
 	}
+
+    private void updateHospitalisationWithOPDDiagnosis(Hospitalisation hospitalisation) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("patient_id", hospitalisation.getPerson().getId());
+        params.put("diagnosis_certainty_concept_id", diagnosisCertaintyConceptId);
+        params.put("diagnosis_order_concept_id", diagnosisOrderConceptId);
+        params.put("diagnosis_status_concept_id", diagnosisStatusConceptId);
+        params.put("visit_type_id", opdVisitTypeId);
+        params.put("start_date", dateRange.getStartDateString());
+        params.put("end_date", dateRange.getEndDateString());
+
+
+        List<Diagnosis> diagnosisInHospitalisation = jdbcTemplate.query(allDiagnosisSql, params,
+                new BeanPropertyRowMapper<>(Diagnosis.class));
+        hospitalisation.setOpdDiagnoses(diagnosisInHospitalisation);
+
+    }
 
     private void updateHospitalisationWithDischargeSummaryObs(Hospitalisation hospitalisation) {
         Map<String,Object> params = new HashMap<>();
@@ -133,19 +166,37 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         hospitalisation.setBedAssignments(bedsAssignmentsInHospitalisation);
     }
 
+    private void updateHospitalisationWithOPDVisits(Hospitalisation hospitalisation) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("patient_id", hospitalisation.getPerson().getId());
+        params.put("visit_type_id", opdVisitTypeId);
+        params.put("start_date", dateRange.getStartDateString());
+        params.put("end_date", dateRange.getEndDateString());
 
-	public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {
+        List<Visit> opdVisits = jdbcTemplate.query(opdVisitsSql, params,
+                new BeanPropertyRowMapper<>(Visit.class));
+            hospitalisation.setOpdVisits(opdVisits);
+
+    }
+
+
+    public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
     @PostConstruct
     public void postConstruct(){
         this.diagnosisInVisitSql = BatchUtils.convertResourceOutputToString(diagnosisInVisit);
+        this.allDiagnosisSql = BatchUtils.convertResourceOutputToString(allDiagnosis);
         this.bedsInHospitalisationSql = BatchUtils.convertResourceOutputToString(bedsInHospitalisation);
         this.opdFollowup1Sql = BatchUtils.convertResourceOutputToString(opdFollowup1);
         this.firstRecordingOfBasicObsInFirstWeekSql = BatchUtils.convertResourceOutputToString(firstRecordingOfBasicObsInFirstWeek);
         this.dischargeSummaryObsSql = BatchUtils.convertResourceOutputToString(dischargeSummaryObs);
+        this.opdVisitsSql = BatchUtils.convertResourceOutputToString(opdVisits);
 
     }
 
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
+    }
 }

@@ -98,6 +98,7 @@ public class WideFormatInPatientExportStep {
         List itemProcessors = new ArrayList<>();
 
         HospitalisationProcessor bedsProcessor = bedsProcessorObjectFactory.getObject();
+        bedsProcessor.setDateRange(dateRange);
         itemProcessors.add(bedsProcessor);
 
         compositeProcessor.setDelegates(itemProcessors);
