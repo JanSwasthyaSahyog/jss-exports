@@ -78,6 +78,14 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 			row.add(nthOPDVisit!=null ? new SimpleDateFormat(DATE_FORMAT).format(nthOPDVisit.getVisit_date()): "N/A");
 		}
 
+		for (int i = 0; i < 20; i++) {
+			DrugOrder drugOrder = hospitalisation.getNthMedicationAtDischarge(i);
+
+			row.add(drugOrder!=null ? drugOrder.getName() : "N/A");
+			row.add(drugOrder!=null ? drugOrder.getFrequency() : "N/A");
+			row.add(drugOrder!=null ? drugOrder.getDose() : "N/A");
+		}
+
 		return row.toArray();
 	}
 
@@ -117,8 +125,8 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("Height");
 
         for (int i = 0; i < 20; i++) {
-            sb.append(",").append(ordinal(i+1)+" Bed assignment");
-            sb.append(",").append(ordinal(i+1)+" Bed duration (Days)");
+            sb.append(",").append(ordinal(i+1)).append(" Bed assignment");
+            sb.append(",").append(ordinal(i+1)).append(" Bed duration (Days)");
         }
 		sb.append(",").append("Total Beds");
 		sb.append(",").append("Outcome");
@@ -139,7 +147,13 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("OPD Follow up 1 Date");
 		sb.append(",").append("Days from Discharge OPD Follow up 1");
 		for (int i = 0; i < 20; i++) {
-			sb.append(",").append(ordinal(i+1)+" OPD Visit in report date range");
+			sb.append(",").append(ordinal(i+1)).append(" OPD Visit in report date range");
+		}
+
+		for (int i = 0; i < 20; i++) {
+			sb.append(",").append(ordinal(i+1)).append(" Medication Name at Discharge");
+			sb.append(",").append(ordinal(i+1)).append(" Medication Frequency at Discharge");
+			sb.append(",").append(ordinal(i+1)).append(" Medication Dose at Discharge");
 		}
 
 		return sb.toString();

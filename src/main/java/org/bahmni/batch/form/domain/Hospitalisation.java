@@ -20,6 +20,7 @@ public class Hospitalisation {
     private BasicObs firstRecordingOfBasicObsInFirstWeek;
     private DischargeSummary dischargeSummary;
     private List<Visit> opdVisits;
+    private List<DrugOrder> medicationAtDischarge;
 
     public Person getPerson() {
         return person;
@@ -133,6 +134,13 @@ public class Hospitalisation {
         return this.opdVisits.get(i);
     }
 
+    public DrugOrder getNthMedicationAtDischarge(int i) {
+        if(i >= this.medicationAtDischarge.size()){
+            return null;
+        }
+        return this.medicationAtDischarge.get(i);
+    }
+
     public Date getSubsequentOPDVisitDate() {
         return subsequentOPDVisitDate;
     }
@@ -194,5 +202,13 @@ public class Hospitalisation {
 
     public void setOpdVisits(List<Visit> opdVisits) {
         this.opdVisits = opdVisits;
+    }
+
+    public List<DrugOrder> getMedicationAtDischarge() {
+        return medicationAtDischarge;
+    }
+
+    public void setMedicationAtDischarge(List<DrugOrder> medicationAtDischarge) {
+        this.medicationAtDischarge = medicationAtDischarge;
     }
 }

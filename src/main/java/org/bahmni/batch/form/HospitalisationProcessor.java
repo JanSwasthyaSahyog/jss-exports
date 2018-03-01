@@ -57,6 +57,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/opdVisits.sql")
     private Resource opdVisits;
 
+    private String drugOrdersSql;
+
+    @Value("classpath:sql/drugOrders.sql")
+    private Resource drugOrders;
+
     @Value("${opdVisitTypeId}")
     private Integer opdVisitTypeId;
 
@@ -76,6 +81,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     private DateRange dateRange;
 
 
+
     @Override
 	public Hospitalisation process(Hospitalisation hospitalisation) throws Exception {
 		System.out.println("Processing hospitalisation for person "+hospitalisation.getIdentifier()+
@@ -87,6 +93,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
 		updateHospitalisationWithDischargeSummaryObs(hospitalisation);
 		updateHospitalisationWithNextOPDFollowup(hospitalisation);
 		updateHospitalisationWithOPDVisits(hospitalisation);
+		updateHospitalisationWithMedication(hospitalisation);
 		return hospitalisation;
 	}
 
@@ -179,6 +186,18 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
 
     }
 
+    private void updateHospitalisationWithMedication(Hospitalisation hospitalisation) {
+        Map<String,Object> params = new HashMap<>();
+        params.put("patient_id", hospitalisation.getPerson().getId());
+        params.put("order_date", hospitalisation.getDischargeDate());
+
+        List<DrugOrder> drugOrders = jdbcTemplate.query(drugOrdersSql, params,
+                new BeanPropertyRowMapper<>(DrugOrder.class));
+        hospitalisation.setMedicationAtDischarge(drugOrders);
+
+    }
+
+
 
     public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
@@ -193,6 +212,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         this.firstRecordingOfBasicObsInFirstWeekSql = BatchUtils.convertResourceOutputToString(firstRecordingOfBasicObsInFirstWeek);
         this.dischargeSummaryObsSql = BatchUtils.convertResourceOutputToString(dischargeSummaryObs);
         this.opdVisitsSql = BatchUtils.convertResourceOutputToString(opdVisits);
+        this.drugOrdersSql = BatchUtils.convertResourceOutputToString(drugOrders);
 
     }
 
