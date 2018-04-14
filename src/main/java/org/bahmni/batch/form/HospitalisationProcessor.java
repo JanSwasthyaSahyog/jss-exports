@@ -12,10 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Scope(value="prototype")
@@ -168,9 +165,31 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         Map<String,Object> params = new HashMap<>();
         params.put("visit_id", hospitalisation.getVisitId());
 
-        List<Bed> bedsAssignmentsInHospitalisation = jdbcTemplate.query(bedsInHospitalisationSql, params,
-                new BeanPropertyRowMapper<>(Bed.class));
-        hospitalisation.setBedAssignments(bedsAssignmentsInHospitalisation);
+        List<Bed> bedsAssignmentsInHospitalisation = jdbcTemplate.query(bedsInHospitalisationSql, params, new BeanPropertyRowMapper<>(Bed.class));
+        //JSS specific fix as the data seems corrupted
+        List<Bed> mergedBedAssignments = mergeConsecutiveBedAssignmentsToSameBed(bedsAssignmentsInHospitalisation);
+        hospitalisation.setBedAssignments(mergedBedAssignments);
+    }
+
+    private List<Bed> mergeConsecutiveBedAssignmentsToSameBed(List<Bed> bedsAssignmentsInHospitalisation) {
+        if(bedsAssignmentsInHospitalisation.isEmpty()){
+            return bedsAssignmentsInHospitalisation;
+        }
+        List<Bed> mergedBeds = new ArrayList<>();
+        for (Bed bed: bedsAssignmentsInHospitalisation) {
+            if(mergedBeds.isEmpty()) {
+                mergedBeds.add(bed);
+            } else {
+                Bed lastMergedBed = mergedBeds.get(mergedBeds.size() - 1);
+                if(lastMergedBed.getWard().equals(bed.getWard()) && lastMergedBed.getBedNumber().equals(bed.getBedNumber())){
+                    lastMergedBed.setDuration(lastMergedBed.getDuration() + bed.getDuration());
+                } else {
+                    mergedBeds.add(bed);
+                }
+            }
+
+        }
+        return mergedBeds;
     }
 
     private void updateHospitalisationWithOPDVisits(Hospitalisation hospitalisation) {
