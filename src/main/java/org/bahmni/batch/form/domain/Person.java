@@ -8,6 +8,9 @@ public class Person {
     private Date birthDate;
     private Integer age;
     private String gender;
+    private String dead;
+    private String deathDate;
+    private String causeOfDeath;
     private Address address;
     private String smartCardHolder;
     private String smoking;
@@ -15,7 +18,7 @@ public class Person {
     private String foodSecurity;
     private Integer familyIncome;
 
-    public Person(){
+    public Person() {
 
     }
 
@@ -111,4 +114,17 @@ public class Person {
     public void setFamilyIncome(Integer familyIncome) {
         this.familyIncome = familyIncome;
     }
+
+    public String getDead() { return dead; }
+
+    public void setDead(String dead) { this.dead = dead; }
+
+    public String getDeathDate() { return deathDate; }
+
+    public void setDeathDate(String deathDate) { this.deathDate = deathDate; }
+
+    public String getCauseOfDeath() { return causeOfDeath; }
+
+    public void setCauseOfDeath(String causeOfDeath) { this.causeOfDeath = causeOfDeath; }
+
 }

@@ -89,6 +89,9 @@ public class WideFormatInPatientExportStep {
                 person.setAlcohol(rs.getString("alcohol"));
                 person.setFoodSecurity(rs.getString("food_security"));
                 person.setFamilyIncome(rs.getInt("family_income"));
+                person.setDead(rs.getString("dead"));
+                person.setDeathDate(rs.getString("death_date"));
+                person.setCauseOfDeath(rs.getString("cause_of_death"));
                 hospitalisation.setPerson(person);
                 return hospitalisation;
             }

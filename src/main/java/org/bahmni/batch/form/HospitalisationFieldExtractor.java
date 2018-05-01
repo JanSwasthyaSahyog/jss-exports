@@ -26,6 +26,9 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 //		row.add(hospitalisation.getPerson().getName());
 		row.add(hospitalisation.getPerson().getAge());
 		row.add(hospitalisation.getPerson().getGender());
+		row.add(hospitalisation.getPerson().getDead());
+		row.add(hospitalisation.getPerson().getDead().equals("YES") ? hospitalisation.getPerson().getDeathDate() : "N/A");
+		row.add(hospitalisation.getPerson().getDead().equals("YES") ? hospitalisation.getPerson().getCauseOfDeath() : "N/A");
 		row.add(hospitalisation.getPerson().getSmartCardHolder());
 		row.add(hospitalisation.getPerson().getSmoking());
 		row.add(hospitalisation.getPerson().getAlcohol());
@@ -47,7 +50,6 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getTemperature());
 		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getWeight());
 		row.add(hospitalisation.getFirstRecordingOfBasicObsInFirstWeek().getHeight());
-
 
 
 //        System.out.println("Beds Assignments" +hospitalisation.getBedAssignments().size());
@@ -86,6 +88,10 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 			row.add(drugOrder!=null ? drugOrder.getDose() : "N/A");
 		}
 
+		row.add(hospitalisation.getBillingInfo().getBilledAmount()!= null ? hospitalisation.getBillingInfo().getBilledAmount() : 0);
+		row.add(hospitalisation.getBillingInfo().getPaidAmount()!=null ? hospitalisation.getBillingInfo().getPaidAmount() : 0);
+
+
 		return row.toArray();
 	}
 
@@ -102,6 +108,9 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 		sb.append(",").append("Patient Age");
 //		sb.append(",").append("Patient Birth date");
 		sb.append(",").append("Patient Gender");
+		sb.append(",").append("Patient Dead");
+		sb.append(",").append("Date of Death");
+		sb.append(",").append("Cause of Death");
 		sb.append(",").append("Smart Card Holder");
 		sb.append(",").append("Smoking");
 		sb.append(",").append("Alcohol");
@@ -155,6 +164,10 @@ public class HospitalisationFieldExtractor implements FieldExtractor<Hospitalisa
 			sb.append(",").append(ordinal(i+1)).append(" Medication Frequency at Discharge");
 			sb.append(",").append(ordinal(i+1)).append(" Medication Dose at Discharge");
 		}
+
+		sb.append(",").append("Billed Amount");
+		sb.append(",").append("Paid Amount");
+
 
 		return sb.toString();
 	}

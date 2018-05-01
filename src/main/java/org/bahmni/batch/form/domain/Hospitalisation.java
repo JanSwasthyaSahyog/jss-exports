@@ -21,6 +21,7 @@ public class Hospitalisation {
     private DischargeSummary dischargeSummary;
     private List<Visit> opdVisits;
     private List<DrugOrder> medicationAtDischarge;
+    private BillingInfo billingInfo;
 
     public Person getPerson() {
         return person;
@@ -210,5 +211,13 @@ public class Hospitalisation {
 
     public void setMedicationAtDischarge(List<DrugOrder> medicationAtDischarge) {
         this.medicationAtDischarge = medicationAtDischarge;
+    }
+
+    public void setBillingInfo(BillingInfo billingInfo) {
+        this.billingInfo = billingInfo;
+    }
+
+    public BillingInfo getBillingInfo() {
+        return billingInfo;
     }
 }

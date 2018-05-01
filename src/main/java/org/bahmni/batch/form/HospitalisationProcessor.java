@@ -60,6 +60,11 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
     @Value("classpath:sql/drugOrders.sql")
     private Resource drugOrders;
 
+    private String billingDetailsSql;
+
+    @Value("classpath:sql/billed_and_paid_amount.sql")
+    private Resource billingDetails;
+
     @Value("${opdVisitTypeId}")
     private Integer opdVisitTypeId;
 
@@ -103,8 +108,20 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
 
     private void updateHospitalisationWithBilling(Hospitalisation hospitalisation) {
         Map<String,Object> params = new HashMap<>();
-        Integer count = erpJDBCTemplate.queryForObject("select count(*) from sale_order", params, Integer.class);
-        System.out.println("Total sale order"+count);
+        params.put("patient_id", hospitalisation.getIdentifier());
+        params.put("start_date", oneDayBefore(hospitalisation.getAdmissionDate()));
+        params.put("end_date", hospitalisation.getDischargeDate());
+        List<BillingInfo> billingInfo = erpJDBCTemplate.query(billingDetailsSql, params, new BeanPropertyRowMapper<>(BillingInfo.class));
+        if(!billingInfo.isEmpty()){
+            hospitalisation.setBillingInfo(billingInfo.get(0));
+        }
+    }
+
+    private Date oneDayBefore(Date admissionDate) {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.setTime(admissionDate);
+        gregorianCalendar.add(Calendar.DATE, -1);
+        return gregorianCalendar.getTime();
     }
 
     private void updateHospitalisationWithOPDDiagnosis(Hospitalisation hospitalisation) {
@@ -241,6 +258,7 @@ public class HospitalisationProcessor implements ItemProcessor<Hospitalisation, 
         this.dischargeSummaryObsSql = BatchUtils.convertResourceOutputToString(dischargeSummaryObs);
         this.opdVisitsSql = BatchUtils.convertResourceOutputToString(opdVisits);
         this.drugOrdersSql = BatchUtils.convertResourceOutputToString(drugOrders);
+        this.billingDetailsSql = BatchUtils.convertResourceOutputToString(billingDetails);
 
     }
 

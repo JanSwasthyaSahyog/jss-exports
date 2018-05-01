@@ -2,6 +2,12 @@ select visit.visit_id, patient_identifier.identifier,
 person.person_id,
 floor(datediff(CURDATE(), person.birthdate) / 365) AS age,
 person.gender gender,
+CASE person.dead
+WHEN 1 THEN 'YES'
+WHEN 0 THEN 'NO'
+END dead,
+person.death_date death_date,
+cause_of_death.name cause_of_death,
 pa.city_village village,
 pa.address3 tehsil,
 pa.state_province state,
@@ -44,4 +50,6 @@ LEFT JOIN obs disposition_note on admit_disposition.obs_group_id = disposition_n
 LEFT JOIN encounter on admit_disposition.encounter_id = encounter.encounter_id
 LEFT JOIN users on users.user_id = admit_disposition.creator
 LEFT JOIN person_name admitting_doctor on admitting_doctor.person_id = users.person_id
-where date(visit.date_started) BETWEEN '${input["startDate"]}' AND '${input["endDate"]}';
+LEFT JOIN concept_name cause_of_death on person.cause_of_death = cause_of_death.concept_id and cause_of_death.concept_name_type = 'FULLY_SPECIFIED'
+where date(visit.date_started) BETWEEN '${input["startDate"]}' AND '${input["endDate"]}'
+order by admission_date;
